@@ -6,6 +6,7 @@ html
     link(rel='stylesheet', href='/vendor/jqplot/jquery.jqplot.css')
     link(rel='stylesheet', href='//cdn.datatables.net/plug-ins/725b2a2115b/integration/bootstrap/3/dataTables.bootstrap.css')
     link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
+    link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Overpass+Mono')
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
@@ -26,14 +27,19 @@ html
         $('##{active}').addClass('active');
         function update_stats(){
           $.ajax({url: '/ext/summary', success: function(json){
-            $("#supply").text(parseInt(parseFloat(json.data[0].supply).toFixed(0)).toLocaleString('en'));
-            $("#difficulty").text(json.data[0].difficulty.toFixed(2));
+            $("#supply").text(json.data[0].supply);
+            $("#difficulty").text(json.data[0].difficulty);
+            $("#masternodeCount").text(json.data[0].masternodeCount);
+            $("#masternodeOnlineCount").text(json.data[0].masternodeOnlineCount);
             $("#difficultyHybrid").text(json.data[0].difficultyHybrid);
-            $("#hashrate").text(parseFloat(json.data[0].hashrate).toLocaleString('en'));
-            $("#lastPrice").text(json.data[0].lastPrice.toFixed(8));
-            $("#lblConnections").text(json.data[0].connections + ' connections');
-            $("#lblBlockcount").text(json.data[0].blockcount + ' blocks');
+            $("#hashrate").text(json.data[0].hashrate);
+            $("#price_btc").text(json.data[0].lastPriceBtc);
             $("#lblX1").text(' ');
+            $("#price_usd").text(json.data[0].lastPriceUsd);
+
+            $("#lblConnections").text(json.data[0].connections + ' connections');
+            $("#lblBlockcountValue").text(json.data[0].blockcount);
+
           }});
         }
         $('.block-last-next').tooltip({
@@ -120,104 +126,134 @@ html
                 a.navbar-link.loading(href='/markets/#{settings.markets.default}')
                   span.fa.fa-line-chart
                   span.menu-text #{settings.locale.menu_markets}
+            if settings.display.masternodes == true
+              li#masternodes
+                a.navbar-link.loading(href='/masternodes')
+                  span.fa.fa-server
+                  span.menu-text #{settings.locale.menu_masternodes}
+            if settings.display.coininfo == true
+              li#coininfo
+                a.navbar-link.loading(href='/coininfo')
+                  span.fa.fa-vcard-o
+                  span.menu-text #{settings.locale.menu_coininfo}
             if settings.display.api == true
               li#info
                 a.navbar-link(href='/info')
                   span.glyphicon.glyphicon-info-sign
                   span.menu-text #{settings.locale.menu_api}
     .col-md-12
-      .row.text-center
-        .col-md-2.col-md-offset-1
-          .panel.panel-default.hidden-sm.hidden-xs
-            .panel-heading
-              if settings.nethash_units == 'K'
-                strong #{settings.locale.network} (KH/s)
-              else if settings.nethash_units == 'M'
-                strong #{settings.locale.network} (MH/s)
-              else if settings.nethash_units == 'G'
-                strong #{settings.locale.network} (GH/s)
-              else if settings.nethash_units == 'T'
-                strong #{settings.locale.network} (TH/s)
-              else if settings.nethash_units == 'P'
-                strong #{settings.locale.network} (PH/s)
-              else if settings.nethash_units == 'H'
-                strong #{settings.locale.network} (H/s)
-            .panel-body
-              if settings.index.difficulty == 'Hybrid'
-               label#hashrate -
-               <br>
-               label#lblX1
-              else
-               label#hashrate -
-        .col-md-2
-          .panel.panel-default.hidden-sm.hidden-xs
-            .panel-heading
-              strong #{settings.locale.difficulty}
-            .panel-body
-              if settings.index.difficulty == 'Hybrid'
-               label#difficulty -
-               <br>
-               label#difficultyHybrid -
-              else
-               label#difficulty -
-        .col-md-2.col-sm-12
-          img(src='#{settings.logo}', style='margin-top:-15px;height:128px;')
-        .col-md-2
-          .panel.panel-default.hidden-sm.hidden-xs
-            .panel-heading
-              strong #{settings.locale.ex_supply} (#{settings.symbol})
-            .panel-body
-              if settings.index.difficulty == 'Hybrid'
-               label#supply -
-               <br>
-               label#lblX1
-              else
-               label#supply -
-        .col-md-2
-          .panel.panel-default.hidden-sm.hidden-xs
-            .panel-heading
-              strong #{settings.markets.exchange} Price
-            .panel-body
-              if settings.index.difficulty == 'Hybrid'
-               label#lastPrice -
-               <br>
-               label#lblX1
-              else
-               label#lastPrice -
+      .row
+        if settings.display.masternodes == false
+          .col-lg-1.col-md-2
+        if settings.display.coinmarketcap == true
+          .col-lg-5.col-md-8
+            .panel.panel-primary.panel-summary
+              .panel-heading
+                span Market
+              .panel-body
+                row.text-center
+                  .col-sm-4
+                    h1
+                      label#price_usd
+                      =" USD"
+                    h5#price_percent_change
+                      =" ("
+                      label#price_percent_change_value
+                      ="%)"
+                    h3
+                      label#price_btc
+                      =" BTC"
+                  .col-sm-4
+                    p(class="text-right") Market cap:
+                    p(class="text-right") 24H Volume:
+                  .col-sm-4
+                    p(class='text-left')
+                      ="$"
+                      span#cmc_market_cap -
+                      =" USD"
+                    p(class='text-left')
+                      ="$"
+                      span#cmc_volume_24h -
+                      =" USD"
+        else
+          .col-lg-3.col-md-0
 
+        if settings.index.show_coin_supply
+          - supplyPanelSize = settings.display.coinmarketcap == true ? "col-lg-2 col-md-4 col-sm-4" : "col-lg-3 col-md-4 col-sm-4"
+          div(class=supplyPanelSize)
+            .panel.panel-primary.panel-summary
+              .panel-heading
+                span #{settings.locale.ex_supply}
+              .panel-body(style="padding-top: 35px")
+                row.text-center
+                  .col-md-12
+                    h1#supply -
+        if settings.index.show_hashrate
+          .col-lg-3.col-md-4.col-sm-4
+            .panel.panel-primary.panel-summary
+              .panel-heading
+                span #{settings.locale.network}
+              .panel-body(style="padding-top: 25px")
+                row.text-center
+                  .col-md-12
+                    h1
+                      if settings.index.difficulty == 'Hybrid'
+                        label#hashrate -
+                        <br>
+                        label#lblX1
+                      else
+                        label#hashrate -
+                      if settings.nethash_units == 'K'
+                        =" (KH/s)"
+                      else if settings.nethash_units == 'M'
+                        =" (MH/s)"
+                      else if settings.nethash_units == 'G'
+                        =" (GH/s)"
+                      else if settings.nethash_units == 'T'
+                        =" (TH/s)"
+                      else if settings.nethash_units == 'P'
+                        =" (PH/s)"
+                      else if settings.nethash_units == 'H'
+                        =" (H/s)"
+                    h3
+                      label #{settings.locale.difficulty}: &nbsp;
+                      if settings.index.difficulty == 'Hybrid'
+                        label#difficulty -
+                        <br>
+                        label#difficultyHybrid -
+                      else
+                        label#difficulty -
+        if settings.display.masternodes == true
+          .col-lg-2.col-md-4.col-sm-4
+            .panel.panel-primary.panel-summary
+              .panel-heading
+                span #{settings.locale.masternodes}
+              .panel-body(style="padding-top: 25px")
+                row.text-center
+                  .col-md-12
+                    h1#masternodeCount -
+                    h3 online:&nbsp;
+                      label#masternodeOnlineCount -
+
+    .col-md-12
       .row.text-center(style='margin-top:10px;margin-bottom:20px;')
         form.form-inline(method='post', action='/search')
           #index-search.form-group
-            input.form-control(type='text', name='search', placeholder='#{settings.locale.ex_search_message}', style='min-width:80%;margin-right:5px;')
+            - searchPlaceholder = (settings.baseType === 'ripple') ? settings.locale.ex_search_message_ripple : settings.locale.ex_search_message;
+            input.form-control(type='text', name='search', placeholder='#{searchPlaceholder}', style='min-width:80%;margin-right:5px;')
             button.btn.btn-success(type='submit') #{settings.locale.ex_search_button}
     block content
     .navbar.navbar-default.navbar-fixed-bottom.hidden-xs
       .col-md-4
-        if settings.display.twitter
-          ul.nav.navbar-nav
-            li.pull-left
-              a#twitter-icon(href="https://twitter.com/#{settings.twitter}", target='_blank')
-                span.glyphicon.fa.fa-twitter
-        if settings.display.facebook
-          ul.nav.navbar-nav
-            li.pull-left
-              a#facebook-icon(href="https://www.facebook.com/#{settings.facebook}", target='_blank')
-                span.glyphicon.fa.fa-facebook
-        if settings.display.googleplus
-          ul.nav.navbar-nav
-            li.pull-left
-              a#googleplus-icon(href="https://plus.google.com/#{settings.googleplus}", target='_blank')
-                span.glyphicon.fa.fa-google-plus
-        if settings.display.youtube
-          ul.nav.navbar-nav
-            li.pull-left
-              a#youtube-icon(href="https://www.youtube.com/channel/#{settings.youtube}", target='_blank')
-                span.glyphicon.fa.fa-youtube
-      .col-md-4
         ul.nav
-          li.text-center(style='margin-left:80px;margin-right:80px;')
+          li.text-center(style='margin-left:20px;margin-right:20px;')
             p(style='margin-top:15px;')
-              a.navbar-link(href='https://github.com/iquidus/explorer', target='_blank') Powered by Iquidus Explorer
+              a.navbar-link(href='https://github.com/sub307/iquidus_explorer_MN', target='_blank', style='font-size:12px;') Powered by Iquidus Explorer customized and maintained by sub307
       span.connections
-        label#lblBlockcount.label.label-default -
+        label#lblBlockcount.label.label-default
+          span#lblBlockcountValue -
+          if settings.baseType === 'ripple'
+            span  ledgers
+          else
+            span  blocks
         label#lblConnections.label.label-default -

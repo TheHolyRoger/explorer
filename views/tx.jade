@@ -14,7 +14,10 @@ block content
         thead
           tr
             th #{settings.locale.confirmations}
-            th.hidden-xs #{settings.locale.tx_block_hash}
+            if settings.baseType === 'ripple'
+              th.hidden-xs #{settings.locale.tx_ledger_hash}
+            else
+              th.hidden-xs #{settings.locale.tx_block_hash}
             th #{settings.locale.timestamp}
             th
         tbody

@@ -1,6 +1,6 @@
 var express = require('express')
   , path = require('path')
-  , bitcoinapi = require('bitcoin-node-api')
+  , chaincoinapi = require('chaincoin-node-api')
   , favicon = require('static-favicon')
   , logger = require('morgan')
   , cookieParser = require('cookie-parser')
@@ -15,10 +15,25 @@ var express = require('express')
 var app = express();
 
 // bitcoinapi
-bitcoinapi.setWalletDetails(settings.wallet);
+chaincoinapi.setWalletDetails(settings.wallet);
 if (settings.heavy != true) {
-  bitcoinapi.setAccess('only', ['getinfo', 'getnetworkhashps', 'getmininginfo','getdifficulty', 'getconnectioncount',
-    'getblockcount', 'getblockhash', 'getblock', 'getrawtransaction', 'getpeerinfo', 'gettxoutsetinfo']);
+  chaincoinapi.setAccess('only', [
+    'getinfo',
+    'getnetworkhashps',
+    'getmininginfo',
+    'getdifficulty',
+    'getconnectioncount',
+    'getblockcount',
+    'getblockhash',
+    'getblock',
+    'getrawtransaction',
+    'getpeerinfo',
+    'gettxoutsetinfo',
+    'getmasternodecount',
+    'getmasternodecountonline',
+    'masternode',
+    'masternodelist',
+  ]);
 } else {
   // enable additional heavy api calls
   /*
@@ -32,7 +47,7 @@ if (settings.heavy != true) {
     getsupply - Returns the current money supply.
     getmaxmoney - Returns the maximum possible money supply.
   */
-  bitcoinapi.setAccess('only', ['getinfo', 'getstakinginfo', 'getnetworkhashps', 'getdifficulty', 'getconnectioncount',
+  chaincoinapi.setAccess('only', ['getinfo', 'getstakinginfo', 'getnetworkhashps', 'getdifficulty', 'getconnectioncount',
     'getblockcount', 'getblockhash', 'getblock', 'getrawtransaction','getmaxmoney', 'getvote',
     'getmaxvote', 'getphase', 'getreward', 'getnextrewardestimate', 'getnextrewardwhenstr',
     'getnextrewardwhensec', 'getsupply', 'gettxoutsetinfo']);
@@ -49,7 +64,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
-app.use('/api', bitcoinapi.app);
+app.use('/api', chaincoinapi.app);
 app.use('/', routes);
 app.use('/ext/getmoneysupply', function(req,res){
   lib.get_supply(function(supply){
@@ -173,6 +188,7 @@ app.use('/ext/connections', function(req,res){
 app.set('title', settings.title);
 app.set('symbol', settings.symbol);
 app.set('coin', settings.coin);
+app.set('baseType', settings.baseType);
 app.set('locale', locale);
 app.set('display', settings.display);
 app.set('markets', settings.markets);

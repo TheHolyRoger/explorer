@@ -92,7 +92,10 @@ block content
       table#recent-table.table.table-bordered.table-striped
         thead
           tr
-            th.text-center #{settings.locale.ex_block}
+            if settings.baseType === 'ripple'
+              th.text-center #{settings.locale.ex_ledger}
+            else
+              th.text-center #{settings.locale.ex_block}
             th.hidden-xs.text-center #{settings.locale.tx_hash}
             th.hidden-xs.text-center #{settings.locale.tx_recipients}
             th.text-center #{settings.locale.mkt_amount} (#{settings.symbol})
