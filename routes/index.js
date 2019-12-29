@@ -226,7 +226,7 @@ router.get('/address/:hash/claim', function(req,res){
 });
 
 router.get('/address/:hash', function(req, res) {
-  route_get_address(res, req.params.hash, settings.txcount);
+  route_get_address(res, req.params.hash, settings.addresses.txcount);
 });
 
 router.get('/address/:hash/:count', function(req, res) {

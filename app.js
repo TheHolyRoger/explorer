@@ -173,13 +173,21 @@ app.use('/ext/getlasttxsajax/:min', function(req,res){
 
 app.use('/ext/getaddresstxsajax/:address', function(req,res){
     req.query.length = parseInt(req.query.length);
-    if(isNaN(req.query.length) || req.query.length > settings.txcount){
-        req.query.length = settings.txcount;
+    if(isNaN(req.query.length) || req.query.length > settings.addresses.txcount){
+        req.query.length = settings.addresses.txcount;
     }
     if(isNaN(req.query.start) || req.query.start < 0){
         req.query.start = 0;
     }
-    db.get_address_txs_ajax(req.params.address, req.query.start, req.query.length,function(txs, count){
+    if(isNaN(req.query.start_blockindex) || req.query.start_blockindex < 0){
+        req.query.start_blockindex = false;
+    }
+    if(isNaN(req.query.start_toskip) || req.query.start_toskip < 0){
+        req.query.start_toskip = false;
+    }
+    req.query.start_blockindex = false;
+    req.query.start_toskip = false;
+    db.get_address_txs_ajax(req.params.address, req.query.start, req.query.length, req.query.start_blockindex, req.query.start_toskip, function(txs, count){
         var data = [];
         for(i=0; i<txs.length; i++){
             if(typeof txs[i].txid !== "undefined") {
@@ -203,7 +211,10 @@ app.use('/ext/getaddresstxsajax/:address', function(req,res){
                 row.push(txs[i].txid);
                 row.push(out);
                 row.push(vin);
-                row.push(txs[i].balance);
+                if (settings.addresses.show_balance_history == true) {
+                  row.push(txs[i].balance);
+                  row.push(txs[i].blockindex);
+                }
                 data.push(row);
             }
         }
@@ -255,8 +266,7 @@ app.set('index', settings.index);
 app.set('use_rpc', settings.use_rpc);
 app.set('heavy', settings.heavy);
 app.set('lock_during_index', settings.lock_during_index);
-app.set('txcount', settings.txcount);
-app.set('txcount_per_page', settings.txcount_per_page);
+app.set('addresses', settings.addresses);
 app.set('nethash', settings.nethash);
 app.set('nethash_units', settings.nethash_units);
 app.set('show_sent_received', settings.show_sent_received);
