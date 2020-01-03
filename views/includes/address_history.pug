@@ -1,7 +1,7 @@
 script.
   var hashAddress = "#{address.a_id}";
-  var setting_maxTxCount = parseInt("#{settings.txcount}");
-  var setting_txPerPage = parseInt("#{settings.txcount_per_page}");
+  var setting_maxTxCount = parseInt("#{settings.addresses.txcount}");
+  var setting_txPerPage = parseInt("#{settings.addresses.txcount_per_page}");
   var lengthMenuOpts = [];
   var lengthMenuOptsAdd = [ 10, 25, 50, 75, 100, 250, 500, 1000 ];
   for (i=0; i < lengthMenuOptsAdd.length; i++) {
@@ -34,9 +34,11 @@ script.
         var txhash = data[1]; //variables for better readability
         var out = data[2]; //variables for better readability
         var vin = data[3]; //variables for better readability
-        var balance = (data[4] / 100000000).toLocaleString('en',{'minimumFractionDigits':2,'maximumFractionDigits':8,'useGrouping':true}); //variables for better readability
+        if ("#{settings.addresses.show_balance_history}" == "true") {
+          var balance = (data[4] / 100000000).toLocaleString('en',{'minimumFractionDigits':2,'maximumFractionDigits':8,'useGrouping':true}); //variables for better readability
 
-        var balanceParts = balance.split('.');
+          var balanceParts = balance.split('.');
+        }
 
         $("td:eq(0)", row).html(timestamp).addClass('hidden-xs');
         $("td:eq(1)", row).html('<a href="/tx/' + txhash + '">' + txhash + '</a>').addClass('hidden-xs');
@@ -72,7 +74,9 @@ script.
         }
         var amountParts = amount.split('.');
         $("td:eq(2)", row).html(updown + amountParts[0] + '.<span class="decimal">' + amountParts[1] + '</span>').addClass(rowclass);
-        $("td:eq(3)", row).html(balanceParts[0] + '.<span class="decimal">' + balanceParts[1] + '</span>');
+        if ("#{settings.addresses.show_balance_history}" == "true") {
+          $("td:eq(3)", row).html(balanceParts[0] + '.<span class="decimal">' + balanceParts[1] + '</span>');
+        }
 
       },
     });
@@ -84,6 +88,7 @@ table#address-txs.table.table-bordered.table-striped
       th.hidden-xs #{settings.locale.tx_hash}
       th #{settings.locale.mkt_amount} 
         span.small (#{settings.symbol})
-      th #{settings.locale.rl_balance} 
-        span.small (#{settings.symbol})
+      if settings.addresses.show_balance_history == true
+        th #{settings.locale.rl_balance} 
+          span.small (#{settings.symbol})
   tbody

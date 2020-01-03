@@ -174,8 +174,8 @@ app.use('/ext/getlasttxsajax/:min', function(req,res){
 
 app.use('/ext/getaddresstxsajax/:address', function(req,res){
     req.query.length = parseInt(req.query.length);
-    if(isNaN(req.query.length) || req.query.length > settings.txcount){
-        req.query.length = settings.txcount;
+    if(isNaN(req.query.length) || req.query.length > settings.addresses.txcount){
+        req.query.length = settings.addresses.txcount;
     }
     if(isNaN(req.query.start) || req.query.start < 0){
         req.query.start = 0;
@@ -204,7 +204,9 @@ app.use('/ext/getaddresstxsajax/:address', function(req,res){
                 row.push(txs[i].txid);
                 row.push(out);
                 row.push(vin);
-                row.push(txs[i].balance);
+                if (settings.addresses.show_balance_history == true) {
+                  row.push(txs[i].balance);
+                }
                 data.push(row);
             }
         }
@@ -257,8 +259,7 @@ app.set('index', settings.index);
 app.set('use_rpc', settings.use_rpc);
 app.set('heavy', settings.heavy);
 app.set('lock_during_index', settings.lock_during_index);
-app.set('txcount', settings.txcount);
-app.set('txcount_per_page', settings.txcount_per_page);
+app.set('addresses', settings.addresses);
 app.set('nethash', settings.nethash);
 app.set('nethash_units', settings.nethash_units);
 app.set('show_sent_received', settings.show_sent_received);
