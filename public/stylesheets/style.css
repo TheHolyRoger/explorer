@@ -1,6 +1,6 @@
 body {
   padding: 80px 40px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
  /* background-image: url('/images/background2.png');*/
 }
 
@@ -40,6 +40,11 @@ body {
 	width: 100%;
 	display:block;
 	overflow: hidden;
+}
+
+.col-md-2 {
+	width: 20%;
+	float: left;
 }
 
 .panel-address-summary {
@@ -138,6 +143,27 @@ tr {
 	body {
 		padding: 0px;
 		padding-top:60px;
+		padding-bottom: 40px;
+	}
+	.hidden-xs {
+	    display: block !important;
+	    font-size: 0.8em;
+	}
+	.col-md-2 {
+	    width: 25%;
+	    padding-left: 3px;
+    	padding-right: 3px;
+	}
+	.col-md-12 .row.text-center:first-child {
+	    padding-top: 130px;
+	}
+	.col-sm-12 {
+	    position: absolute;
+	    top: 10px;
+	    width: 100%;
+	}
+	#index-search {
+	     width: 100%; 
 	}
 }
 
@@ -152,6 +178,26 @@ tr {
 	    width: 150px !important;
     }
 }
+
+@media (max-width: 991px) and (min-width: 768px){
+	.hidden-sm {
+	    display: block !important;
+	    font-size: 0.8em;
+	}
+}
+
+@media (min-width: 992px){
+	.col-md-2 {
+	    width: 16.66666667%;
+	}
+	.col-md-offset-1 {
+		margin-left: 8.33333333%;
+	}
+	.col-md-10 {
+		width: 83.33333333%;
+	}
+}
+
 .table>tbody>tr>td.addr-summary {
 	line-height: 7.7;
 	font-size: 1.3em;
@@ -171,6 +217,9 @@ tr {
 	bottom: 0px;
 }
 
+.navbar-brand {
+    padding: 3px 0px 0px;
+}
 
 .decimal {
 	font-size: 0.7em;

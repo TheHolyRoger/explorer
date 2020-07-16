@@ -17,6 +17,7 @@
 
   // logo
   "logo": "/images/logo.png",
+  "headerlogo": "/images/headerlogo.png",
 
   // favicon
   "favicon": "public/favicon.ico",
