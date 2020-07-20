@@ -1,10 +1,10 @@
 var express = require('express')
-    , router = express.Router()
-    , settings = require('../lib/settings')
-    , locale = require('../lib/locale')
-    , db = require('../lib/database')
-    , lib = require('../lib/explorer')
-    , qr = require('qr-image');
+  , router = express.Router()
+  , settings = require('../lib/settings')
+  , locale = require('../lib/locale')
+  , db = require('../lib/database')
+  , lib = require('../lib/explorer')
+  , qr = require('qr-image');
 
 function route_get_block(res, blockhash) {
   lib.get_block(blockhash, function (block) {
@@ -49,7 +49,7 @@ function route_get_tx(res, txid) {
         lib.get_rawtransaction(txid, function(rtx) {
           if (rtx.txid) {
             lib.prepare_vin(rtx, function(vin) {
-              lib.prepare_vout(rtx.vout, rtx.txid, vin, function(rvout, rvin) {
+              lib.prepare_vout(rtx.vout, rtx.txid, vin, ((typeof rtx.vjoinsplit === 'undefined' || rtx.vjoinsplit == null) ? [] : rtx.vjoinsplit), function(rvout, rvin) {
                 lib.calculate_total(rvout, function(total){
                   if (!rtx.confirmations > 0) {
                     var utx = {
@@ -99,20 +99,28 @@ function route_get_index(res, error) {
 }
 
 function route_get_address(res, hash, count) {
-  db.get_address(hash, function(address) {
+  db.get_address(hash, false, function(address) {
     if (address) {
       var txs = [];
-      res.render('address', { active: 'address', address: address, txs: txs});
-    } else {
-      route_get_index(res, hash + ' not found');
-    }
-  });
-}
+      var hashes = address.txs.reverse();
+      if (address.txs.length < count) {
+        count = address.txs.length;
+      }
+      lib.syncLoop(count, function (loop) {
+        var i = loop.iteration();
+        db.get_tx(hashes[i].addresses, function(tx) {
+          if (tx) {
+            txs.push(tx);
+            loop.next();
+          } else {
+            loop.next();
+          }
+        });
+      }, function(){
 
-function route_get_claim_form(res, hash){
-  db.get_address(hash, function(address) {
-    if (address) {
-      res.render("claim_address", { active: "address", address: address});
+        res.render('address', { active: 'address', address: address, txs: txs});
+      });
+
     } else {
       route_get_index(res, hash + ' not found');
     }
@@ -234,7 +242,7 @@ router.get('/address/:hash/:count', function(req, res) {
 });
 
 router.post('/search', function(req, res) {
-  var query = req.body.search;
+  var query = req.body.search.trim();
   if (query.length == 64) {
     if (query == settings.genesis_tx) {
       res.redirect('/block/' + settings.genesis_block);
@@ -254,7 +262,7 @@ router.post('/search', function(req, res) {
       });
     }
   } else {
-    db.get_address(query, function(address) {
+    db.get_address(query, false, function(address) {
       if (address) {
         res.redirect('/address/' + address.a_id);
       } else {

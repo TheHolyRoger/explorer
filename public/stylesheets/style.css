@@ -158,6 +158,15 @@ tr {
 	margin-bottom: 5px;
 }
 
+#hashratepanel span,
+#difficultypanel span,
+#supplypanel span,
+#masternodepanel span,
+#pricepanel span{
+	margin: 0 5px 0 5px;
+	top: 0;
+}
+
 .label a:link {
 	color: #ffffff;
 }

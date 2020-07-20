@@ -43,6 +43,7 @@
 
     // global
     "difficulty": "Difficulty",
+    "masternodecount": "Masternodes",
     "network": "Network",
     "height": "Height",
     "timestamp": "Timestamp",
@@ -56,13 +57,14 @@
     "nonce": "Nonce",
     "new_coins": "New Coins",
     "proof_of_stake": "PoS",
+    "hidden_sender": "Hidden Sender",
+    "hidden_recipient": "Hidden Recipient",
     "initial_index_alert": "Indexing is currently incomplete, functionality is limited until index is up-to-date.",
 
     //address menu
     "a_menu_showing": "Showing last",
     "a_menu_txs": "transactions",
     "a_menu_all": "All",
-    "a_qr": "QR Code",
 
     //richlist
     "rl_received_coins": "Top 100 - Received Coins",
@@ -76,7 +78,6 @@
     "rl_top100": "Top 76-100",
     "rl_hundredplus": "101+",
 
-    "net_addnodes": "Add Nodes",
     "net_connections": "Connections",
     "net_address": "Address",
     "net_protocol": "Protocol",
@@ -91,6 +92,9 @@
     "api_getnetworkhashps": "Returns the current network hashrate. (hash/s)",
     "api_getdifficulty": "Returns the current difficulty.",
     "api_getconnectioncount": "Returns the number of connections the block explorer has to other nodes.",
+    "api_getmasternodelist": "Returns the complete master node list.",
+    "api_getmasternodecount": "Returns the total number of masternodes on the network.",
+    "api_getvotelist":  "Returns the current vote list.",
     "api_getblockcount": "Returns the current block index.",
     "api_getblockhash": "Returns the hash of the block at ; index 0 is the genesis block.",
     "api_getblock": "Returns information about the block with the given hash.",
@@ -127,17 +131,12 @@
     "mkt_time_stamp": "Time Stamp",
 
     // Markets
-    "fides": "Fides-ex",
     "poloniex": "Poloniex",
     "bittrex": "Bittrex",
-    "altmarkets": "AltMarkets",
     "bleutrade": "Bleutrade",
     "yobit": "Yobit",
-    "empoex": "Empoex",
-    "cryptsy": "Cryptsy",
-    "ccex": "C-Cex",
+	"stex": "Stex",
     "crex": "Crex24",
-    "tradesatoshi": "TradeSatoshi",
 
     // Heavy rewards view
     "heavy_title": "Reward/voting information",
